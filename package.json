@@ -1,5 +1,5 @@
 {
-  "name": "npm-package-downloader",
+  "name": "shizai-downloader",
   "version": "1.0.0",
   "scripts": {
     "npm": "node npm.js",
