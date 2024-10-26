@@ -135,19 +135,27 @@ async function downloadDockerImage(imageName) {
             pack.pipe(tarStream);
 
             for (const layer of layers) {
-                const layerResponse = await axios.get(`https://${registry}/v2/${name}/blobs/${layer.digest}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    },
-                    responseType: 'stream'
-                });
-
-                pack.entry({ name: `layer-${layer.digest.replace(/[:/]/g, '_')}.tar.gz` }, layerResponse.data);
-                downloadedLayers++;
-                progressBar.update(downloadedLayers, {
-                    downloaded: downloadedLayers,
-                    total: totalLayers
-                });
+                try {
+                    const layerResponse = await axios.get(`https://${registry}/v2/${name}/blobs/${layer.digest}`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        },
+                        responseType: 'stream'
+                    });
+    
+                    pack.entry({ name: `layer-${layer.digest.replace(/[:/]/g, '_')}.tar.gz` }, layerResponse.data);
+                    downloadedLayers++;
+                    progressBar.update(downloadedLayers, {
+                        downloaded: downloadedLayers,
+                        total: totalLayers
+                    });
+                } catch (error) {
+                    console.log("*********************************************************************");
+                    console.log("ブラウザで下記urlへbearerをつけてアクセスしてください");
+                    console.log(`https://${registry}/v2/${name}/blobs/${layer.digest}`);
+                    console.log(`Bearer ${token}`);
+                    console.log("*********************************************************************");
+                }
             }
 
             // コンフィグを保存
