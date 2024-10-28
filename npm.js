@@ -16,7 +16,7 @@ const downloadedPackages = new Set();
 
 async function fetchPackageMetadata(name) {
     try {
-        const metadata = await npmFetch.json(`/${name}`);
+        const metadata = await npmFetch.json(`/${name}`, {strictSSL: false});
         return metadata;
     } catch (error) {
         console.error(chalk.red(`パッケージ "${name}" のメタデータ取得中にエラーが発生しました。`));
@@ -46,7 +46,7 @@ async function downloadTarball(name, version) {
     console.log(chalk.green(`\n処理中: ${pkgSpec}...`));
 
     // パッケージメタデータを取得
-    const metadata = await npmFetch.json(`/${name}/${version}`);
+    const metadata = await npmFetch.json(`/${name}/${version}`, {strictSSL: false});
 
     // 依存関係を取得
     const dependencies = metadata.dependencies || {};
@@ -61,7 +61,7 @@ async function downloadTarball(name, version) {
     if (!fs.existsSync(destPath)) {
         console.log(`ダウンロード中: ${tarballUrl}...`);
 
-        const response = await npmFetch(tarballUrl);
+        const response = await npmFetch(tarballUrl, {strictSSL: false});
 
         const totalSize = parseInt(response.headers.get('content-length'), 10);
         let downloadedSize = 0;
